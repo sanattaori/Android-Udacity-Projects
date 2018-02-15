@@ -20,10 +20,18 @@
     android:layout_height="match_parent">
 
     <!--TODO (2) Add an id to the TextView with the value @+id/tv_toy_names-->
-    <TextView
-        android:id="@+id/tv_toy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:textSize="20sp" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv_toy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:padding="16dp"
+            android:includeFontPadding="true"
+            android:textColor="@android:color/holo_orange_dark" />
+    </ScrollView>
 </FrameLayout>
