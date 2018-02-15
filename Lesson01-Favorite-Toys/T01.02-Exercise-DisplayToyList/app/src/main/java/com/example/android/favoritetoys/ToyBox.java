@@ -25,7 +25,7 @@ public final class ToyBox {
      */
     public static String[] getToyNames() {
         return new String[] {
-                "Red Toy Wagon",
+                "TEST TOY 1",
                 "Chemistry Set",
                 "Yo-Yo",
                 "Pop-Up Book",
@@ -65,7 +65,8 @@ public final class ToyBox {
                 "Squirt Guns",
                 "Miniature Replica Animals Stuffed with Beads that you swore to your parents would be worth lots of money one day",
                 "Creepy Gremlin Doll",
-                "Neodymium-Magnet Toy"
+                "Neodymium-Magnet Toy",
+                "ALL TOYS"
         };
     }
 }
