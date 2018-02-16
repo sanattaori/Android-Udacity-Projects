@@ -24,6 +24,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.datafrominternet.utilities.NetworkUtils;
+
+import java.net.URL;
+
 public class MainActivity extends AppCompatActivity {
 
     // TODO DONE(26) Create an EditText variable called mSearchBoxEditText
@@ -41,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // TODO DONE(29) Use findViewById to get a reference to mSearchBoxEditText
-        mSearchBoxet = findViewById(R.id.edit_text_search_github);
+        mSearchBoxet =  findViewById(R.id.edit_text_search_github);
         mUrlDisplayTv = findViewById(R.id.tv_url_display);
         mSearchResultTv = findViewById(R.id.tv_search_results);
         // TODO DONE(30) Use findViewById to get a reference to mUrlDisplayTextView
@@ -58,12 +62,20 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int clickId = item.getItemId();
         if (clickId == R.id.action_search) {
-            Context context = MainActivity.this;
-            String textToShow = "Search clicked";
-            Toast.makeText(context, textToShow, Toast.LENGTH_SHORT).show();
+            makeGithubSearchQuery();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void makeGithubSearchQuery() {
+        //get text from search box
+        String githubQuery = mSearchBoxet.getText().toString();
+        //pass to NetworkUtils BuildUrl
+        URL githubSearchUrl = NetworkUtils.buildUrl(githubQuery);
+        //set result to display TextView
+        mSearchResultTv.setText(String.format("Requesting url : %s", githubSearchUrl.toString()));
+
     }
 
 }

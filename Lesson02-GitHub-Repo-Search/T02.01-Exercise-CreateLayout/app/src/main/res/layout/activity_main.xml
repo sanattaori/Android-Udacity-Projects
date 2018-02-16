@@ -23,21 +23,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_main"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:paddingTop="16dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:background="@android:color/holo_green_light"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp">
 
     <!--TODO (6) Delete this TextView-->
 
-    <EditText
-        android:id="@+id/edit_text_search_github"
-        android:hint="@string/type_github_query"
+    <TextView
+        android:id="@+id/tv_url_display"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        />
+        android:layout_marginTop="8dp"
+        android:text="@string/enter_search_and_url_will_be_displayed_here"
+        android:textSize="26sp" />
+
+    <EditText
+        android:id="@+id/edit_text_search_github"
+        android:layout_width="353dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/type_github_query" />
     <!--TODO (7) Add an EditText-->
     <!--TODO (8) Give the EditText an id of @+id/et_search_box-->
     <!--TODO (9) Set the text size to 22sp-->
@@ -50,21 +58,13 @@
     <!--TODO (15) Set the width to wrap_content and the height to wrap_content-->
     <!--TODO (16) Give the TextView a top margin of 8dp-->
     <!--TODO (17) Set the text to tell the user their search URL will show up here when they click search-->
-    <TextView
-        android:id="@+id/tv_url_display"
-        android:textSize="26sp"
-        android:layout_marginTop="8dp"
-        android:text="@string/enter_search_and_url_will_be_displayed_here"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
     <!--TODO (18) Add a ScrollView-->
     <!--TODO (19) Set the width to match_parent and the height to wrap_content-->
     <!--TODO (20) Set the top margin to 16dp-->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        
+
         <TextView
             android:id="@+id/tv_search_results"
             android:layout_width="wrap_content"
@@ -79,8 +79,6 @@
     <!--TODO (23) Set the text size to 18sp-->
     <!--TODO (24) Set the height and width to wrap_content-->
     <!--TODO (25) Set the text to something that tells the user to make a search-->
-
-
 
 
 </LinearLayout>
