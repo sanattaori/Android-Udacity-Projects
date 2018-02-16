@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.example.android.datafrominternet.utilities.NetworkUtils;
 
+import java.io.IOException;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
@@ -75,6 +76,12 @@ public class MainActivity extends AppCompatActivity {
         URL githubSearchUrl = NetworkUtils.buildUrl(githubQuery);
         //set result to display TextView
         mSearchResultTv.setText(String.format("Requesting url : %s", githubSearchUrl.toString()));
+        try {
+            String GitHubSearchResults = NetworkUtils.getResponseFromHttpUrl(githubSearchUrl);
+            mSearchResultTv.setText(GitHubSearchResults);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
