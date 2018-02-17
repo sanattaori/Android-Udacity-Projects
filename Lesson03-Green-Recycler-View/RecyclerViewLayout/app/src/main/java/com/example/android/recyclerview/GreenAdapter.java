@@ -1,18 +1,14 @@
 /*
- * Copyright (C) 2016 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+        Adapter Help
+-connect Recyclerview to data source
+The adapter does create ViewHolder objects and inflates item views in its onCreateViewHolder function,
+it also returns the number of items in the data source, and binds data from the data source to each
+item (even if we pass the responsibility to the ViewHolder). It doesn't cache views associated with
+each item (that's the job of the ViewHolder class) nor does it recycle them; that&rsquo;s what our
+RecyclerView does.
+
+*/
+
 package com.example.android.recyclerview;
 
 import android.content.Context;
@@ -22,6 +18,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+
 
 /**
  * We couldn't come up with a good name for this class. Then, we realized
@@ -35,12 +33,54 @@ import android.widget.TextView;
  * If you don't like our puns, we named this Adapter GreenAdapter because its
  * contents are green.
  */
+
 public class GreenAdapter extends RecyclerView.Adapter<GreenAdapter.NumberViewHolder> {
 
     private static final String TAG = GreenAdapter.class.getSimpleName();
-
+    private static int viewHolderCount;
     private int mNumberItems;
-
+    /*
+     * The number of ViewHolders that have been created. Typically, you can figure out how many
+     * there should be by determining how many list items fit on your screen at once and add 2 to 4
+     * to that number. That isn't the exact formula, but will give you an idea of how many
+     * ViewHolders have been created to display any given RecyclerView.
+     *
+     * Here's some ASCII art to hopefully help you understand:
+     *
+     *    ViewHolders on screen:
+     *
+     *        *-----------------------------*
+     *        |         ViewHolder index: 0 |
+     *        *-----------------------------*
+     *        |         ViewHolder index: 1 |
+     *        *-----------------------------*
+     *        |         ViewHolder index: 2 |
+     *        *-----------------------------*
+     *        |         ViewHolder index: 3 |
+     *        *-----------------------------*
+     *        |         ViewHolder index: 4 |
+     *        *-----------------------------*
+     *        |         ViewHolder index: 5 |
+     *        *-----------------------------*
+     *        |         ViewHolder index: 6 |
+     *        *-----------------------------*
+     *        |         ViewHolder index: 7 |
+     *        *-----------------------------*
+     *
+     *    Extra ViewHolders (off screen)
+     *
+     *        *-----------------------------*
+     *        |         ViewHolder index: 8 |
+     *        *-----------------------------*
+     *        |         ViewHolder index: 9 |
+     *        *-----------------------------*
+     *        |         ViewHolder index: 10|
+     *        *-----------------------------*
+     *        |         ViewHolder index: 11|
+     *        *-----------------------------*
+     *
+     *    Total number of ViewHolders = 11
+     */
     /**
      * Constructor for GreenAdapter that accepts a number of items to display and the specification
      * for the ListItemClickListener.
@@ -49,6 +89,8 @@ public class GreenAdapter extends RecyclerView.Adapter<GreenAdapter.NumberViewHo
      */
     public GreenAdapter(int numberOfItems) {
         mNumberItems = numberOfItems;
+        //When a new GreenAdapter is created, set the viewHolderCount to 0
+        viewHolderCount = 0;
     }
 
     /**
@@ -72,6 +114,21 @@ public class GreenAdapter extends RecyclerView.Adapter<GreenAdapter.NumberViewHo
 
         View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
         NumberViewHolder viewHolder = new NumberViewHolder(view);
+
+
+        viewHolder.viewHolderIndex.setText("ViewHolder index: " + viewHolderCount);
+
+        // Use ColorUtils.getViewHolderBackgroundColorFromInstance and pass in a Context and the viewHolderCount
+        int backgroundColorForViewHolder = ColorUtils
+                .getViewHolderBackgroundColorFromInstance(context, viewHolderCount);
+        // Set the background color of viewHolder.itemView with the color from above
+        viewHolder.itemView.setBackgroundColor(backgroundColorForViewHolder);
+
+        // Increment viewHolderCount and log its value
+        viewHolderCount++;
+
+        Log.d(TAG, "onCreateViewHolder: number of ViewHolders created: "
+                + viewHolderCount);
 
         return viewHolder;
     }
@@ -111,6 +168,8 @@ public class GreenAdapter extends RecyclerView.Adapter<GreenAdapter.NumberViewHo
         // Will display the position in the list, ie 0 through getItemCount() - 1
         TextView listItemNumberView;
 
+        TextView viewHolderIndex;
+
         /**
          * Constructor for our ViewHolder. Within this constructor, we get a reference to our
          * TextViews and set an onClickListener to listen for clicks. Those will be handled in the
@@ -121,7 +180,9 @@ public class GreenAdapter extends RecyclerView.Adapter<GreenAdapter.NumberViewHo
         public NumberViewHolder(View itemView) {
             super(itemView);
 
-            listItemNumberView = (TextView) itemView.findViewById(R.id.tv_item_number);
+            listItemNumberView = itemView.findViewById(R.id.tv_item_number);
+
+            viewHolderIndex = itemView.findViewById(R.id.tv_view_holder_instance);
         }
 
         /**
