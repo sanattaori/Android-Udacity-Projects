@@ -113,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
             mLoadingIndicator.setVisibility(View.INVISIBLE);
             if (githubSearchResults != null && !githubSearchResults.equals("")) {
                 mSearchResultTv.setText(githubSearchResults);
+                showJsonDataView();
             }
 
             else {

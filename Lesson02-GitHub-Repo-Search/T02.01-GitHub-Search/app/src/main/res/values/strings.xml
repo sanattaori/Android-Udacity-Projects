@@ -16,7 +16,7 @@
 <resources>
     <string name="app_name">Github Query</string>
     <string name="type_github_query">Type github query</string>
-    <string name="enter_search_and_url_will_be_displayed_here">Enter search and url will be displayed here</string>
+    <string name="enter_search_and_url_will_be_displayed_here">Enter search </string>
     <string name="make_a_search_and_result_will_be_shown_here">Make a search and result will be shown here</string>
     <string name="search">Search</string>
     <string name="error_occured">Error Occured</string>
