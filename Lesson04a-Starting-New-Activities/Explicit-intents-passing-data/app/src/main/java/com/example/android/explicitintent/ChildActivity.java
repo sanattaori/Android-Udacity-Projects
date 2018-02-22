@@ -15,19 +15,34 @@
  */
 package com.example.android.explicitintent;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ChildActivity extends AppCompatActivity {
 
     /* Field to store our TextView */
     private TextView mDisplayText;
 
+    private Button site;
+    private Button map;
+    private Button call;
+    private EditText loc;
+
+    @SuppressLint("ResourceType")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.activity_child);
 
         /* Typical usage of findViewById... */
@@ -41,8 +56,73 @@ public class ChildActivity extends AppCompatActivity {
             String text = startActivity.getStringExtra(Intent.EXTRA_TEXT);
             mDisplayText.setText(text);
         }
-            // TODO (5) If the Intent contains the correct extra, retrieve the text
 
-            // TODO (6) If the Intent contains the correct extra, use it to set the TextView text
+        site = findViewById(R.id.site);
+        map = findViewById(R.id.map);
+
+        call = findViewById(R.id.call);
+        loc = findViewById(R.id.loc);
+
+        site.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                return false;
+            }
+        });
+
+
+        site.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String page = "http://sanattaori.me";
+                Log.d("page", "onClick: "+page);
+                openWebPage(page);
+            }
+        });
+
+        map.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loc.setText("");
+                String address = loc.getText().toString();
+
+                openmap(address);
+            }
+        });
+        call.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loc.setText("");
+                String phoneNumber = loc.getText().toString();
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + phoneNumber));
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                }
+            }
+        });
+
+    }
+    private void openmap(String location){
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("geo")
+                .path("0,0")
+                .query(location);
+
+        Uri addressUri = builder.build();
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(addressUri);
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+    
+     private void openWebPage(String page){
+        Uri web_page = Uri.parse(page);
+        Intent intent = new Intent(Intent.ACTION_VIEW, web_page);
+         if (intent.resolveActivity(getPackageManager()) != null) {
+             startActivity(intent);
+         }
     }
 }

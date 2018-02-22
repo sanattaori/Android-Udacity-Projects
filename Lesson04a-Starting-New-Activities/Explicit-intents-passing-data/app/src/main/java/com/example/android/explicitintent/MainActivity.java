@@ -56,8 +56,6 @@ public class MainActivity extends AppCompatActivity {
                 // TODO (1) Retrieve the text from the EditText and store it in a variable
 
                 String data = mNameEntry.getText().toString();
-
-
                 /*
                  * Storing the Context in a variable in this case is redundant since we could have
                  * just used "this" or "MainActivity.this" in the method call below. However, we

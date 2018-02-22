@@ -17,4 +17,9 @@
     <string name="app_name">Explicit Intent</string>
     <string name="data_from_explicit_intent_will_be_displayed_here">Data from explicit intent will be displayed here</string>
     <string name="pass_data">Pass Data</string>
+    <string name="call_ravi">Call Ravi</string>
+    <string name="share_text">Share Text</string>
+    <string name="open_map">Open Map</string>
+    <string name="open_my_website">Open my website</string>
+    <string name="call_friend">call friend</string>
 </resources>
