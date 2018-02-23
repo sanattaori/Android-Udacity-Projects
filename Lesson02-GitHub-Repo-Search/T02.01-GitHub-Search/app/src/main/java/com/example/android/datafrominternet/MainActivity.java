@@ -19,7 +19,6 @@ import android.annotation.SuppressLint;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.support.v7.app.AppCompatActivity;
@@ -90,14 +89,6 @@ public class MainActivity extends AppCompatActivity implements
 //        outState.putString(resultKey,resultsJson);
     }
 
-    @Override
-    protected void onPause() {
-
-        super.onPause();
-    }
-
-
-
     //show error
     private void showErrorMessage() {
         mSearchResultTv.setVisibility(View.INVISIBLE);
@@ -129,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public Loader<String> onCreateLoader(int id, final Bundle args) {
         return new AsyncTaskLoader<String>(this) {
+            String mGithubJson;
             @Override
             public String loadInBackground() {
                 String search_query = args.getString(queryKey);
@@ -137,7 +129,6 @@ public class MainActivity extends AppCompatActivity implements
                 }
                 try {
                     URL github_url = new URL(search_query);
-
                     return NetworkUtils.getResponseFromHttpUrl(github_url);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -147,12 +138,30 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             protected void onStartLoading() {
+
                 super.onStartLoading();
                 if (args == null) {
                     return;
                 }
                 mLoadingIndicator.setVisibility(View.VISIBLE);
-                forceLoad();
+
+                /*
+                 * If we already have cached results, just deliver them now. If we don't have any
+                 * cached results, force a load.
+                 */
+                if (mGithubJson != null) {
+                    deliverResult(mGithubJson);
+                } else {
+
+                    forceLoad();
+                }
+            }
+            //Override deliverResult and store the data in mGithubJson
+            @Override
+            public void deliverResult(String githubJson) {
+                mGithubJson = githubJson;
+                super.deliverResult(githubJson);
+                mLoadingIndicator.setVisibility(View.INVISIBLE);
             }
 
         };
