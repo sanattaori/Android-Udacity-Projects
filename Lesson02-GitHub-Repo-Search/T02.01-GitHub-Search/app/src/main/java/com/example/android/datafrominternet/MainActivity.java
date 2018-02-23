@@ -19,6 +19,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,10 +37,14 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity {
 
     // TODO DONE(26) Create an EditText variable called mSearchBoxEditText
-    EditText mSearchBoxet;
-    TextView mUrlDisplayTv;
-    TextView mSearchResultTv;
-    TextView erroMsgTv;
+    private EditText mSearchBoxet;
+    private TextView mUrlDisplayTv;
+    private TextView mSearchResultTv;
+    private TextView erroMsgTv;
+
+    private static final String queryKey = "query";
+    private static final String resultKey = "results";
+
 
     // TODO DONE(27) Create a TextView variable called mUrlDisplayTextView
     // TODO DONE(28) Create a TextView variable called mSearchResultsTextView
@@ -59,7 +64,26 @@ public class MainActivity extends AppCompatActivity {
         // TODO DONE(30) Use findViewById to get a reference to mUrlDisplayTextView
         // TODO DONE(31) Use findViewById to get a reference to mSearchResultsTextView
         mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
+
+        //store data when destroyed
+        if (savedInstanceState != null) {
+            String qUrl = savedInstanceState.getString(queryKey);
+            String qResults = savedInstanceState.getString(resultKey);
+
+            mSearchBoxet.setText(qUrl);
+            mSearchResultTv.setText(qResults);
+        }
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        String queryUrl = mSearchBoxet.getText().toString();
+        outState.putString(queryKey,queryUrl);
+        String resultsJson = mSearchResultTv.getText().toString();
+        outState.putString(resultKey,resultsJson);
+    }
+
     //show error
     private void showErrorMessage() {
         mSearchResultTv.setVisibility(View.INVISIBLE);
@@ -86,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
 
     @SuppressLint("StaticFieldLeak")
     public class GithubAsyncTaskQuery extends AsyncTask<URL, Void, String> {
