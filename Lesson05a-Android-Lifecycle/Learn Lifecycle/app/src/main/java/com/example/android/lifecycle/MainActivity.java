@@ -1,6 +1,7 @@
 package com.example.android.lifecycle;
 
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String ON_RESTART = "onRestart";
     private static final String ON_DESTROY = "onDestroy";
     private static final String ON_SAVE_INSTANCE_STATE = "onSaveInstanceState";
+    private static final String LIFE_CYCLE_KEY = "callbacks";
 
     /*
      * This TextView will contain a running log of every lifecycle callback method called from this
@@ -48,7 +50,24 @@ public class MainActivity extends AppCompatActivity {
         mLifecycleDisplay = (TextView) findViewById(R.id.tv_lifecycle_events_display);
 
         // TODO (1) Use logAndAppend within onCreate
-        logAndAppend("inside oncreate");
+        logAndAppend(ON_CREATE);
+
+        //load bundle
+        if(savedInstanceState!=null) {
+            if (savedInstanceState.containsKey(LIFE_CYCLE_KEY)){
+                String preStateCallbacks = savedInstanceState.getString(LIFE_CYCLE_KEY);
+                mLifecycleDisplay.setText(preStateCallbacks);
+            }
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        logAndAppend(ON_SAVE_INSTANCE_STATE);
+        String mLifecycledisplay = mLifecycleDisplay.getText().toString();
+        //store text to bundle
+        outState.putString(LIFE_CYCLE_KEY,mLifecycledisplay);
     }
 
     // TODO (2) Override onStart, call super.onStart, and call logAndAppend with ON_START
@@ -56,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        logAndAppend("inside onStart");
+        logAndAppend(ON_START);
     }
 
     // TODO (3) Override onResume, call super.onResume, and call logAndAppend with ON_RESUME
@@ -64,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        logAndAppend("onResume");
+        logAndAppend(ON_RESUME);
     }
 
 
@@ -74,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        logAndAppend("onPause");
+        logAndAppend(ON_PAUSE);
         Log.d(TAG, "onPause: inside onPause");
     }
 
@@ -84,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        logAndAppend("onStop");
+        logAndAppend(ON_STOP);
     }
 
 
@@ -93,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        logAndAppend("onRestart");
+        logAndAppend(ON_RESTART);
     }
 
 
@@ -103,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        logAndAppend("onDestory");
+        logAndAppend(ON_DESTROY);
     }
 
     /**
