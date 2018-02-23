@@ -16,25 +16,29 @@
 package com.example.android.datafrominternet;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.PersistableBundle;
+
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import com.example.android.datafrominternet.utilities.NetworkUtils;
 
 import java.io.IOException;
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements
+        LoaderManager.LoaderCallbacks<String>{
 
     // TODO DONE(26) Create an EditText variable called mSearchBoxEditText
     private EditText mSearchBoxet;
@@ -44,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String queryKey = "query";
     private static final String resultKey = "results";
+    private static final int GITHUB_LOADER_SEARCH = 222;
 
 
     // TODO DONE(27) Create a TextView variable called mUrlDisplayTextView
@@ -68,11 +73,12 @@ public class MainActivity extends AppCompatActivity {
         //store data when destroyed
         if (savedInstanceState != null) {
             String qUrl = savedInstanceState.getString(queryKey);
-            String qResults = savedInstanceState.getString(resultKey);
+
 
             mSearchBoxet.setText(qUrl);
-            mSearchResultTv.setText(qResults);
+
         }
+        getSupportLoaderManager().initLoader(GITHUB_LOADER_SEARCH,null,this);
     }
 
     @Override
@@ -80,9 +86,17 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         String queryUrl = mSearchBoxet.getText().toString();
         outState.putString(queryKey,queryUrl);
-        String resultsJson = mSearchResultTv.getText().toString();
-        outState.putString(resultKey,resultsJson);
+//        String resultsJson = mSearchResultTv.getText().toString();
+//        outState.putString(resultKey,resultsJson);
     }
+
+    @Override
+    protected void onPause() {
+
+        super.onPause();
+    }
+
+
 
     //show error
     private void showErrorMessage() {
@@ -112,49 +126,112 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressLint("StaticFieldLeak")
-    public class GithubAsyncTaskQuery extends AsyncTask<URL, Void, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mLoadingIndicator.setVisibility(View.VISIBLE);
+    @Override
+    public Loader<String> onCreateLoader(int id, final Bundle args) {
+        return new AsyncTaskLoader<String>(this) {
+            @Override
+            public String loadInBackground() {
+                String search_query = args.getString(queryKey);
+                if (search_query == null || TextUtils.isEmpty(search_query)) {
+                    return null;
+                }
+                try {
+                    URL github_url = new URL(search_query);
+
+                    return NetworkUtils.getResponseFromHttpUrl(github_url);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onStartLoading() {
+                super.onStartLoading();
+                if (args == null) {
+                    return;
+                }
+                mLoadingIndicator.setVisibility(View.VISIBLE);
+                forceLoad();
+            }
+
+        };
+    }
+
+    @Override
+    public void onLoadFinished(Loader<String> loader, String data) {
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+        if (data != null && !data.equals("")) {
+            mSearchResultTv.setText(data);
+            showJsonDataView();
         }
 
-        @Override
-        protected String doInBackground(URL... params) {
-            URL searchUrl = params[0];
-            String githubSearchResults = null;
-            try {
-                githubSearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return githubSearchResults;
-        }
-
-        @Override
-        protected void onPostExecute(String githubSearchResults) {
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
-            if (githubSearchResults != null && !githubSearchResults.equals("")) {
-                mSearchResultTv.setText(githubSearchResults);
-                showJsonDataView();
-            }
-
-            else {
-                showErrorMessage();
-            }
+        else {
+            showErrorMessage();
         }
     }
 
+    @Override
+    public void onLoaderReset(Loader<String> loader) {
+
+    }
+
+//    @SuppressLint("StaticFieldLeak")
+//    public class GithubAsyncTaskQuery extends AsyncTask<URL, Void, String> {
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            mLoadingIndicator.setVisibility(View.VISIBLE);
+//        }
+//
+//        @Override
+//        protected String doInBackground(URL... params) {
+//            URL searchUrl = params[0];
+//            String githubSearchResults = null;
+//            try {
+//                githubSearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            return githubSearchResults;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String githubSearchResults) {
+//
+//        }
+//    }
+
+    @SuppressLint("SetTextI18n")
     private void makeGithubSearchQuery() {
         //get text from search box
         String githubQuery = mSearchBoxet.getText().toString();
+
+        if (TextUtils.isEmpty(githubQuery)) {
+            mUrlDisplayTv.setText("No query entered, nothing to search for.");
+            return;
+        }
+
         //pass to NetworkUtils BuildUrl
         URL githubSearchUrl = NetworkUtils.buildUrl(githubQuery);
-        //set result to display TextView
+
         mSearchResultTv.setText(String.format("Wait Searching/Requesting url : %s", githubSearchUrl.toString()));
         try {
-            new GithubAsyncTaskQuery().execute(githubSearchUrl);
+            //new GithubAsyncTaskQuery().execute(githubSearchUrl);
             mSearchResultTv.setText(githubSearchUrl.toString());
+
+            Bundle queryBundle = new Bundle();
+            queryBundle.putString(queryKey, githubSearchUrl.toString());
+
+            LoaderManager loaderManager = getSupportLoaderManager();
+            Loader<String> githubSearchLoader = loaderManager.getLoader(GITHUB_LOADER_SEARCH);
+
+            if (githubSearchLoader  == null) {
+                loaderManager.initLoader(GITHUB_LOADER_SEARCH,queryBundle,this);
+            } else {
+                loaderManager.restartLoader(GITHUB_LOADER_SEARCH,queryBundle,this);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
